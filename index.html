@@ -1560,10 +1560,11 @@ formLogin.parentNode.insertBefore(loginMessage, formLogin.nextSibling);
     showLoading(true);
     const formData = new FormData(formLogin);
 
-    fetch('https://rycorex-project.42web.io/backend/login.php', {
-      method: 'POST',
-      body: formData
-    })
+const BASE_URL = "https://rycorex-project.42web.io.net"; // Ganti dengan domain InfinityFree kamu
+
+fetch(`${BASE_URL}login.php`, {
+  method: 'POST',
+  body: formData
     .then(res => res.text())
     .then(text => {
       showLoading(false);
@@ -1587,10 +1588,11 @@ formLogin.parentNode.insertBefore(loginMessage, formLogin.nextSibling);
     showLoading(true);
     const formData = new FormData(formRegister);
 
-    fetch('https://rycorex-project.42web.io/backend/register.php', {
-      method: 'POST',
-      body: formData
-    })
+  fetch(`${BASE_URL}/database/register.php`, {
+  method: 'POST',
+  body: formData
+   })
+
     .then(res => res.text())
     .then(text => {
       showLoading(false);
