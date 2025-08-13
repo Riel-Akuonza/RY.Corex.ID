@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard • RY.COREX</title>
+  <link rel="icon" type="image/png" href="aset/img/icon.png">
+  <style>
+    :root {
+      --primary: #5e2f8b;
+      --primary-light: #7d4eac;
+      --background: #f8f5fa;
+      --white: #fff;
+      --text: #333;
+      --text-light: #555;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-strong: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    #main-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    #main-nav a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    #main-nav a:hover {
+      color: var(--primary-light);
+    }
+
+    .btn, .btn-login {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--white);
+      padding: 10px 19px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.15s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(94,47,139,0.08);
+      text-decoration: none;
+      outline: none;
+      position: relative;
+    }
+
+    .btn:hover, .btn-login:hover {
+      background: var(--primary);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 6px 18px rgba(94,47,139,0.18);
+    }
+
+    .btn:active, .btn-login:active {
+      background: var(--primary-light);
+      transform: scale(0.97);
+      box-shadow: 0 1px 4px rgba(94,47,139,0.10);
+    }
+
+    /* Overlay */
+    #nav-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30,16,50,0.32);
+      z-index: 999;
+      transition: opacity 0.3s;
+    }
+
+    /* Hamburger menu */
+    #hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 12px;
+      z-index: 1001;
+      width: 44px;
+      height: 44px;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.2s;
+      border-radius: 50%;
+    }
+
+    #hamburger:hover {
+      background: rgba(94,47,139,0.08);
+    }
+
+    #hamburger span {
+      width: 32px;
+      height: 4px;
+      background: #5e2f8b;
+      border-radius: 2px;
+      transition: all 0.35s cubic-bezier(.4,2,.6,1);
+      display: block;
+    }
+
+    #hamburger.open span:nth-child(1) {
+      transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    #hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    #hamburger.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background: #fff;
+      box-shadow: var(--shadow);
+      padding: 10px 0;
+      list-style: none;
+      margin: 0;
+      z-index: 1002;
+      border-radius: 8px;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu li a {
+      display: block;
+      padding: 10px 20px;
+      color: #5e2f8b;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .dropdown-menu li a:hover {
+      background: #f0ebfa;
+    }
+
+    @media (max-width: 768px) {
+      #main-nav {
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 32px 0 24px 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+        transform: translateY(-110%);
+        transition: transform 0.35s cubic-bezier(.4,2,.6,1), opacity 0.25s;
+        z-index: 1000;
+        opacity: 0.98;
+        border-radius: 0 0 22px 22px;
+        min-height: 320px;
+      }
+
+      #main-nav.active {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      #hamburger {
+        display: flex;
+      }
+
+      #main-nav a {
+        font-size: 1.18rem;
+        padding: 16px 0;
+        width: 100%;
+        text-align: center;
+      }
+
+      .dropdown-menu {
+        position: static;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .dropdown-menu li a {
+        padding-left: 30px;
+      }
+
+      .dropdown:hover .dropdown-menu {
+        display: none;
+      }
+    }
+
+    main {
+      max-width: 900px;
+      margin: 100px auto 40px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      padding: 40px 28px;
+      text-align: center;
+    }
+
+    .welcome {
+      font-size: 1.5rem;
+      color: #5e2f8b;
+      margin-bottom: 18px;
+    }
+
+    .desc {
+      color: #555;
+      margin-bottom: 32px;
+    }
+
+    .dashboard-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .dashboard-link {
+      background: #f8f5fa;
+      border-radius: 10px;
+      padding: 24px 32px;
+      color: #5e2f8b;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 1px 6px rgba(94,47,139,0.07);
+      transition: background 0.2s, transform 0.18s;
+      min-width: 180px;
+    }
+
+    .dashboard-link:hover {
+      background: #e0d6f3;
+      transform: translateY(-3px) scale(1.03);
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px 10px 18px;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2><a href="main.html" style="text-decoration: none; color: #5e2f8b; font-weight: bold; ">RY.COREX</a></h2>
+
+    <button id="hamburger" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav id="main-nav">
+         <a href="index-on.html">Kembali</button>
+      <div class="dropdown">
+        <a href="#">Modul</a>
+        <ul class="dropdown-menu">
+          <li><a href="#">E-Book</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">Video</a></li>
+          <li><a href="#">Doct.</a></li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        <a href="#">About</a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Terms & Privacy</a></li>
+          <li><a href="#">Call Admin</a></li>
+          <li><a href="#">Subscribe</a></li>
+          <li><a href="#">Riwayat</a></li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        <a href="#">FAQ</a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Crypto</a></li>
+          <li><a href="#">Saham</a></li>
+          <li><a href="#">Forex</a></li>
+          <li><a href="#">Komoditas</a></li>
+          <li><a href="#">Reksa Dana & ETF</a></li>
+        </ul>
+      </div>
+   
+    </nav>
+
+    
+  </header>
+
+  <div id="nav-overlay"></div>
+
+  <main>
+    <div class="welcome">Selamat datang di Dashboard, <span id="user-name">User</span>!</div>
+    <div class="desc">
+      Anda berhasil login.<br>
+      Silakan akses fitur-fitur utama RY.COREX di bawah ini:
+    </div>
+    <div class="dashboard-links">
+      <a href="#" class="dashboard-link">Portofolio</a>
+      <a href="#" class="dashboard-link">Analisis Crypto</a>
+      <a href="#" class="dashboard-link">Signal Trading</a>
+      <a href="#" class="dashboard-link">Berita & Kalender</a>
+      <a href="#" class="dashboard-link">Profil Akun</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 MyPurpleAI • Dashboard RY.COREX
+  </footer>
+
+  <script>
+    const user = localStorage.getItem('user_name') || 'User';
+    document.getElementById('user-name').textContent = user;
+
+    function logout() {
+      localStorage.removeItem('user_name');
+      window.location.href = "../index.html";
+    }
+
+    // Hamburger Menu
+    const hamburger = document.getElementById('hamburger');
+    const mainNav = document.getElementById('main-nav');
+    const navOverlay = document.getElementById('nav-overlay');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mainNav.classList.toggle('active');
+      navOverlay.style.display = mainNav.classList.contains('active') ? 'block' : 'none';
+    });
+
+    navOverlay.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mainNav.classList.remove('active');
+      navOverlay.style.display = 'none';
+    });
+
+    // Dropdown toggle (for mobile)
+    document.querySelectorAll('.dropdown > a').forEach(link => {
+      link.addEventListener('click', e => {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          const submenu = link.nextElementSibling;
+          const isVisible = submenu.style.display === 'block';
+          document.querySelectorAll('.dropdown-menu').forEach(menu => menu.style.display = 'none');
+          submenu.style.display = isVisible ? 'none' : 'block';
+        }
+      });
+    });
+
+    function logout() {
+  const confirmLogout = confirm("Apakah Anda ingin keluar ke halaman awal?");
+  if (confirmLogout) {
+    localStorage.removeItem('user_name');
+    window.location.href = "../index.html";
+  }
+}
+  </script>
+
+
+</body>
+</html>

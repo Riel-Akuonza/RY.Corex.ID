@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>RY.COREX</title>
+  <!-- Favicon -->
+<link rel="icon" type="image/png" href="aset/img/icon.png">
+  <style>
+    :root {
+      --primary: #5e2f8b;
+      --primary-light: #7d4eac;
+      --background: #f8f5fa;
+      --white: #fff;
+      --text: #333;
+      --text-light: #555;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-strong: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    * {
+      box-sizing: border-box;
+    }
+     html {
+    scroll-behavior: smooth;
+  }
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    #main-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    #main-nav a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    #main-nav a:hover {
+      color: var(--primary-light);
+    }
+
+    .btn, .btn-login {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--white);
+      padding: 10px 19px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 
+        background 0.3s,
+        transform 0.15s cubic-bezier(.4,2,.6,1),
+        box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(94,47,139,0.08);
+      text-decoration: none;
+      outline: none;
+      position: relative;
+    }
+
+    .btn:hover, .btn-login:hover {
+      background: var(--primary);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 6px 18px rgba(94,47,139,0.18);
+    }
+
+    .btn:active, .btn-login:active {
+      background: var(--primary-light);
+      transform: scale(0.97);
+      box-shadow: 0 1px 4px rgba(94,47,139,0.10);
+    }
+
+    /* Overlay for mobile nav */
+#nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30,16,50,0.32);
+  z-index: 999;
+  transition: opacity 0.3s;
+}
+
+/* Hamburger improvements */
+#hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 12px;
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+  border-radius: 50%;
+}
+#hamburger:hover {
+  background: rgba(94,47,139,0.08);
+}
+#hamburger span {
+  width: 32px;
+  height: 4px;
+  background: #5e2f8b;
+  border-radius: 2px;
+  transition: all 0.35s cubic-bezier(.4,2,.6,1);
+  display: block;
+}
+#hamburger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+#hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+#hamburger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+    @media (max-width: 768px) {
+      #main-nav {
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 32px 0 24px 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+        transform: translateY(-110%);
+        transition: transform 0.35s cubic-bezier(.4,2,.6,1), opacity 0.25s;
+        z-index: 1000;
+        opacity: 0.98;
+        border-radius: 0 0 22px 22px;
+        min-height: 320px;
+      }
+      #main-nav.active {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      #hamburger {
+        display: flex;
+      }
+      /* Nav links bigger for touch */
+      #main-nav a, .dropdown-menu li a {
+        font-size: 1.18rem;
+        padding: 16px 0;
+        width: 100%;
+        text-align: center;
+      }
+      .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        min-width: 0;
+        border-radius: 0;
+        padding: 0;
+        background: none;
+      }
+      .dropdown-menu li a {
+        padding-left: 30px;
+      }
+    }
+
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 140px 20px 100px;
+      background: none; /* Hapus background lama */
+      overflow: hidden;
+    }
+    .hero-bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .hero > *:not(.hero-bg-video) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h2 {
+      font-size: 42px;
+      color: #5e2f8b;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 18px;
+      max-width: 720px;
+      margin: 0 auto 40px;
+    }
+    section {
+      padding: 80px 20px 60px;
+      text-align: center;
+    }
+    section h3 {
+      font-size: 30px;
+      color: #5e2f8b;
+      margin-bottom: 30px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .card h4 {
+      color: #5e2f8b;
+      margin-top: 0;
+    }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 14px;
+      color: #777;
+      background: #fff;
+      margin-top: 60px;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown > a {
+      cursor: pointer;
+    }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #fff;
+      min-width: 160px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 8px 0;
+      z-index: 1001;
+    }
+
+    .dropdown-menu li {
+      list-style: none;
+    }
+
+    .dropdown-menu li a {
+      display: block;
+      padding: 10px 20px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 400;
+      transition: background 0.2s;
+    }
+    .dropdown-menu li a:hover {
+      background: var(--background);
+    }
+
+    .dropdown:hover .dropdown-menu,
+    .dropdown:focus-within .dropdown-menu {
+      display: block;
+    }
+
+    /* Responsive: show dropdown as block on mobile nav open */
+    @media (max-width: 768px) {
+      .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        min-width: 0;
+        border-radius: 0;
+        padding: 0;
+        background: none;
+      }
+      .dropdown-menu li a {
+        padding-left: 30px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #main-nav {
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 32px 0 24px 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+        transform: translateY(-110%);
+        transition: transform 0.35s cubic-bezier(.4,2,.6,1), opacity 0.25s;
+        z-index: 1000;
+        opacity: 0.98;
+        border-radius: 0 0 22px 22px;
+        min-height: 320px;
+      }
+      #main-nav.active {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      #hamburger {
+        display: flex;
+      }
+      /* Nav links bigger for touch */
+      #main-nav a, .dropdown-menu li a {
+        font-size: 1.18rem;
+        padding: 16px 0;
+        width: 100%;
+        text-align: center;
+      }
+      .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        min-width: 0;
+        border-radius: 0;
+        padding: 0;
+        background: none;
+      }
+      .dropdown-menu li a {
+        padding-left: 30px;
+      }
+    }
+
+    .crypto-logo-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 100%;
+      gap: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .crypto-logo-img {
+      width: 360px;
+      max-width: 90vw;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border-radius: 50px;
+      box-shadow: 0 8px 32px rgba(94,47,139,0.13), 0 1.5px 8px rgba(0,0,0,0.08);
+      background: #7d4eac;
+      transition: transform 0.4s cubic-bezier(.4,2,.6,1), box-shadow 0.3s;
+      padding: 10px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .crypto-logo-img:hover {
+      transform: scale(1.04) rotate(-2deg);
+      box-shadow: 0 16px 40px rgba(95, 47, 139, 0.295), 0 2px 12px rgba(0, 0, 0, 0.281);
+    }
+
+    /* Popup Auth Styles */
+    .popup-auth-overlay {
+      position: fixed;
+      z-index: 2000;
+      inset: 0;
+      background: rgba(30,16,50,0.32);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .popup-auth-box {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(94,47,139,0.13), 0 1.5px 8px rgba(0,0,0,0.08);
+      padding: 32px 28px 22px 28px;
+      min-width: 320px;
+      max-width: 95vw;
+      position: relative;
+      animation: popupIn 0.25s cubic-bezier(.4,2,.6,1);
+    }
+    @keyframes popupIn {
+      from { transform: scale(0.92) translateY(30px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .popup-auth-close {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #7d4eac;
+      cursor: pointer;
+      z-index: 2;
+      transition: color 0.2s;
+    }
+    .popup-auth-close:hover {
+      color: #5e2f8b;
+    }
+    .popup-auth-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      justify-content: center;
+    }
+    .popup-auth-tabs button {
+      background: none;
+      border: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      color: var(--primary-light);
+      padding: 8px 18px;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .popup-auth-tabs button.active,
+    .popup-auth-tabs button:hover {
+      background: var(--primary-light);
+      color: #fff;
+    }
+    .popup-auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 260px;
+    }
+    .popup-auth-form label {
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+    .popup-auth-form input {
+      padding: 9px 12px;
+      border: 1.5px solid #e0d6f3;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      background: #faf8fd;
+      color: var(--text);
+      transition: border 0.2s;
+    }
+    .popup-auth-form input:focus {
+      border-color: var(--primary-light);
+    }
+    .popup-auth-form .btn {
+      margin-top: 8px;
+    }
+    @media (max-width: 500px) {
+      .popup-auth-box {
+        padding: 18px 4vw 12px 4vw;
+        min-width: 0;
+      }
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>RY.COREX</h2>
+  <nav id="main-nav">
+    <a href="index.html">Home</a>
+    <div class="dropdown">
+      <a href="#">Modul</a>
+      <ul class="dropdown-menu">
+        <li><a href="#">E-Book</a></li>
+        <li><a href="#">PDF</a></li>
+        <li><a href="#">Video</a></li>
+        <li><a href="#">Doct.</a></li>
+      </ul>
+    </div>
+    <div class="dropdown">
+      <a href="#">About</a>
+      <ul class="dropdown-menu">
+        <li><a href="#">Terms & Privacy</a></li>
+        <li><a href="#">Call Admin</a></li>
+        <li><a href="#">Subscribe</a></li>
+        <li><a href="#">Riwayat</a></li>
+      </ul>
+    </div>
+    <div class="dropdown">
+      <a href="#">FAQ</a>
+      <ul class="dropdown-menu">
+        <li><a href="#">Crypto</a></li>
+        <li><a href="#">Saham</a></li>
+        <li><a href="#">Forex</a></li>
+        <li><a href="#">Komoditas</a></li>
+        <li><a href="#">Reksa Dana & ETF</a></li>
+      </ul>
+    </div>
+  </nav>
+  <a class="btn-login" href="Database Login/login.html">Login</a>
+  <button id="hamburger" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<section class="hero">
+  <!-- Hapus video, ganti dengan canvas yang akan dibuat oleh JS -->
+  <h2>Selamat Datang Di Website <span>RY.COREX</span></h2>
+  <p><b>RY.COREX</b> adalah komunitas belajar seputar dunia <b style="color: #5e2f8b;">Crypto</b>
+     dan <b style="color: #5e2f8b;">Blockchain</b>. Di sini, kamu bisa memahami dasar-dasar teknologi <b>Crypto</b>, strategi investasi, hingga tren pasar terbaru secara sederhana dan terarah.
+
+Tempat yang tepat untuk kamu yang ingin berkembang bersama, bukan hanya ikut-ikutan.
+Belajar, diskusi, dan tumbuh bersama <b style="color: #5e2f8b;">Komunitas</b> yang peduli dengan masa depan finansial digital.</p>
+
+<div style="margin-top: 30px;">
+  <a href="#features" class="btn">Mulai Jelajahi</a>
+</div>
+
+  
+  <div class="crypto-logo-group" style="margin-top:50px; display:flex; justify-content:center; gap:40px; flex-wrap:wrap;">
+    <img src="aset/img/Crypto-icon.png" alt="Crypto Group" class="crypto-logo-img">
+    <img src="aset/img/stocky.png" alt="Crypto Group" class="crypto-logo-img">
+    <img src="aset/img/Meme-coin.png" alt="Crypto Group" class="crypto-logo-img">
+  </div>
+</section>
+
+<section class="features">
+  <h3>Fitur Unggulan RY.COREX</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>Analisis Crypto Otomatis</h4>
+      <p>Dapatkan insight harga, tren, dan prediksi Bitcoin, Ethereum, dan altcoin secara real-time dengan AI.</p>
+    </div>
+    <div class="card">
+      <h4>Signal Trading & Alert</h4>
+      <p>Notifikasi peluang beli/jual terbaik untuk crypto, saham, forex, dan komoditas langsung ke dashboard Anda.</p>
+    </div>
+    <div class="card">
+      <h4>Portofolio Multi-Aset</h4>
+      <p>Lacak dan kelola investasi Anda di crypto, reksadana, saham, dan komoditas dalam satu tampilan.</p>
+    </div>
+    <div class="card">
+      <h4>AI Chat Finansial</h4>
+      <p>Konsultasi langsung dengan AI untuk strategi investasi, edukasi trading, dan tanya jawab seputar pasar.</p>
+    </div>
+  </div>
+</section>
+
+<section class="integration">
+  <h3>Integrasi & Data Real-Time</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>Sinkronisasi Exchange</h4>
+      <p>Hubungkan akun Binance, Indodax, Tokocrypto, dan lainnya untuk update portofolio otomatis.</p>
+    </div>
+    <div class="card">
+      <h4>Import Data Investasi</h4>
+      <p>Upload file CSV, Excel, atau screenshot portofolio untuk analisis instan oleh AI.</p>
+    </div>
+    <div class="card">
+      <h4>Berita & Kalender Ekonomi</h4>
+      <p>Update berita crypto, forex, dan jadwal rilis data ekonomi penting setiap hari.</p>
+    </div>
+    <div class="card">
+      <h4>Watchlist & Notifikasi</h4>
+      <p>Buat daftar pantauan aset favorit dan dapatkan notifikasi harga sesuai target Anda.</p>
+    </div>
+  </div>
+</section>
+
+<section class="usecases">
+  <h3>Solusi Untuk Semua Investor</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>Pemula</h4>
+      <p>Belajar dasar investasi, simulasi trading, dan edukasi risiko secara interaktif.</p>
+    </div>
+    <div class="card">
+      <h4>Trader Aktif</h4>
+      <p>Gunakan tools analisis teknikal, chart AI, dan strategi otomatis untuk trading harian.</p>
+    </div>
+    <div class="card">
+      <h4>Investor Jangka Panjang</h4>
+      <p>Rancang portofolio optimal di crypto, saham, reksadana, dan komoditas dengan rekomendasi AI.</p>
+    </div>
+  </div>
+</section>
+
+<section class="security">
+  <h3>Keamanan & Privasi Terjamin</h3>
+  <div class="cards">
+    <div class="card">
+      <h4>Enkripsi Data</h4>
+      <p>Seluruh data portofolio dan transaksi Anda dienkripsi end-to-end.</p>
+    </div>
+    <div class="card">
+      <h4>Verifikasi Dua Langkah</h4>
+      <p>Lindungi akun dengan autentikasi dua faktor (2FA) dan notifikasi login baru.</p>
+    </div>
+    <div class="card">
+      <h4>Privasi Pengguna</h4>
+      <p>Kami tidak pernah membagikan data Anda ke pihak ketiga tanpa izin.</p>
+    </div>
+    <div class="card">
+      <h4>Audit & Sertifikasi</h4>
+      <p>Platform diaudit rutin dan bersertifikat keamanan kelas dunia.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 MyPurpleAI • Terms • Privacy • Kebijakan Cookie
+</footer>
+
+<div id="popup-auth" class="popup-auth-overlay" style="display:none;">
+  <div class="popup-auth-box">
+    <button class="popup-auth-close" aria-label="Tutup">&times;</button>
+    <div class="popup-auth-tabs">
+      <button id="tab-login" class="active">Login</button>
+      <button id="tab-register">Register</button>
+    </div>
+    <div class="popup-auth-content">
+      <!-- Login Form -->
+      <form id="form-login" class="popup-auth-form" autocomplete="off">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" name="email" placeholder="Alamat Email" required>
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" placeholder="Password" required>
+        <button class="btn" type="submit">Login</button>
+      </form>
+      <div id="login-message" style="margin-top:10px;color:#b13c3c;font-weight:600;text-align:center;"></div>
+      <!-- Register Form -->
+      <form id="form-register" class="popup-auth-form" autocomplete="off">
+        <label for="reg-name">Username</label>
+        <input type="text" id="reg-name" name="username" placeholder="Username" required>
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" name="email" placeholder="Alamat Email" required>
+        <label for="reg-password">Password</label>
+        <input type="password" id="reg-password" name="password" placeholder="Password" required>
+        <button class="btn" type="submit">Register</button>
+      </form>
+      <div id="register-message" style="margin-top:10px;color:#b13c3c;font-weight:600;text-align:center;"></div>
+    </div>
+  </div>
+</div>
+
+<div id="global-loading" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(30,16,50,0.18);backdrop-filter:blur(2px);align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:28px 36px;border-radius:16px;box-shadow:0 4px 24px rgba(94,47,139,0.13);display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div class="loader" style="border:4px solid #e0d6f3;border-top:4px solid #7d4eac;border-radius:50%;width:38px;height:38px;animation:spin 1s linear infinite"></div>
+    <span style="color:#5e2f8b;font-weight:600;">Memproses...</span>
+  </div>
+</div>
+<div id="global-popup" style="display:none;position:fixed;inset:0;z-index:4000;align-items:center;justify-content:center;background:rgba(30,16,50,0.18);backdrop-filter:blur(2px);">
+  <div id="global-popup-box" style="background:#fff;padding:28px 36px;border-radius:16px;box-shadow:0 4px 24px rgba(94,47,139,0.13);display:flex;flex-direction:column;align-items:center;gap:12px;min-width:220px;max-width:90vw;">
+    <span id="global-popup-icon" style="font-size:2.5rem;"></span>
+    <span id="global-popup-msg" style="font-weight:600;font-size:1.1rem;text-align:center;"></span>
+    <button id="global-popup-close" style="margin-top:8px;padding:7px 22px;border-radius:8px;border:none;background:#7d4eac;color:#fff;font-weight:600;cursor:pointer;">Masuk</button>
+  </div>
+</div>
+
+<script>
+  // Hamburger toggle
+  const hamburger = document.getElementById('hamburger');
+  const nav = document.getElementById('main-nav');
+  hamburger.addEventListener('click', () => {
+    nav.classList.toggle('active');
+    hamburger.classList.toggle('open');
+  });
+
+  // Popup Auth
+  const popup = document.getElementById('popup-auth');
+  const btnLogin = document.querySelector('.btn-login');
+  const btnClose = document.querySelector('.popup-auth-close');
+  const tabLogin = document.getElementById('tab-login');
+  const tabRegister = document.getElementById('tab-register');
+  const formLogin = document.getElementById('form-login');
+  const formRegister = document.getElementById('form-register');
+  const registerMessage = document.getElementById('register-message');
+  const loginMessage = document.createElement('div');
+loginMessage.id = "login-message";
+loginMessage.style.marginTop = "10px";
+loginMessage.style.color = "#b13c3c";
+loginMessage.style.fontWeight = "600";
+loginMessage.style.textAlign = "center";
+formLogin.parentNode.insertBefore(loginMessage, formLogin.nextSibling);
+
+  btnLogin.addEventListener('click', e => {
+    e.preventDefault();
+    popup.style.display = 'flex';
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
+    formLogin.style.display = 'flex';
+    formRegister.style.display = 'none';
+  });
+  btnClose.addEventListener('click', () => popup.style.display = 'none');
+  popup.addEventListener('click', e => {
+    if (e.target === popup) popup.style.display = 'none';
+  });
+  tabLogin.addEventListener('click', () => {
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
+    formLogin.style.display = 'flex';
+    formRegister.style.display = 'none';
+  });
+  tabRegister.addEventListener('click', () => {
+    tabRegister.classList.add('active');
+    tabLogin.classList.remove('active');
+    formLogin.style.display = 'none';
+    formRegister.style.display = 'flex';
+  });
+  formLogin.addEventListener('submit', function(e) {
+    e.preventDefault();
+    loginMessage.textContent = "";
+    showLoading(true);
+    const formData = new FormData(formLogin);
+
+    fetch('database/login.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.text())
+    .then(text => {
+      showLoading(false);
+      if (text.toLowerCase().includes('berhasil')) {
+        showPopup("Login berhasil! Mengalihkan...", true);
+        setTimeout(() => {
+          window.location.href = "Tampalate/index-on.html";
+        }, 1400);
+      } else {
+        showPopup(text, false);
+      }
+    })
+    .catch(() => {
+      showLoading(false);
+      showPopup("Terjadi kesalahan koneksi.", false);
+    });
+  });
+  formRegister.addEventListener('submit', function(e) {
+    e.preventDefault();
+    registerMessage.textContent = "";
+    showLoading(true);
+    const formData = new FormData(formRegister);
+
+    fetch('database/register.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.text())
+    .then(text => {
+      showLoading(false);
+      if (text.toLowerCase().includes('berhasil')) {
+        showPopup("Registrasi berhasil! Silakan login.", true);
+        formRegister.reset();
+      } else {
+        showPopup(text, false);
+      }
+    })
+    .catch(() => {
+      showLoading(false);
+      showPopup("Terjadi kesalahan koneksi 🌐.", false);
+    });
+  });
+
+  function showLoading(show=true) {
+    document.getElementById('global-loading').style.display = show ? 'flex' : 'none';
+  }
+  function showPopup(msg, success=true) {
+    const popup = document.getElementById('global-popup');
+    const icon = document.getElementById('global-popup-icon');
+    const msgBox = document.getElementById('global-popup-msg');
+    icon.textContent = success ? "✅" : "❌";
+    icon.style.color = success ? "#2e8b57" : "#b13c3c";
+    msgBox.textContent = msg;
+    popup.style.display = 'flex';
+  }
+  document.getElementById('global-popup-close').onclick = function() {
+    document.getElementById('global-popup').style.display = 'none';
+  };
+</script>
+<script src="aset/bg-hero.js"></script>
+</body>
+</html>
